@@ -3,15 +3,18 @@ import morgan from "morgan";
 import cors from "cors";
 
 import contactsRouter from "./routes/contactsRouter.js";
-import { connectDB, sequelize } from "./db/sequelize.js";
+import authRouter from "./routes/authRouter.js";
+import { connectDB, syncModels } from "./db/sequelize.js";
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
 
 app.use("/api/contacts", contactsRouter);
+app.use("/api/auth", authRouter);
 
 app.use((_, res) => {
   res.status(404).json({ message: "Route not found" });
@@ -25,10 +28,10 @@ app.use((err, req, res, next) => {
 const start = async () => {
   try {
     await connectDB();
-    await sequelize.sync();
+    await syncModels();
 
-    app.listen(3000, () => {
-      console.log("Server is running. Use our API on port: 3000");
+    app.listen(PORT, () => {
+      console.log(`Server is running. Use our API on port: ${PORT}`);
     });
 
   } catch (error) {

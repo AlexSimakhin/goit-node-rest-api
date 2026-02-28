@@ -18,4 +18,14 @@ async function connectDB() {
   }
 }
 
-export { sequelize, connectDB };
+async function syncModels() {
+  try {
+    await sequelize.sync({ alter: true });
+    console.log("All models were synchronized (altered) successfully.");
+  } catch (error) {
+    console.error("Model sync error:", error.message);
+    process.exit(1);
+  }
+}
+
+export { sequelize, connectDB, syncModels };
