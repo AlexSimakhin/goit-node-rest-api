@@ -34,7 +34,7 @@ export const login = async (req, res, next) => {
     const payload = { id: user.id };
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "24h" });
     await user.update({ token });
-    res.json({ token, user: { email: user.email, subscription: user.subscription } });
+    res.status(200).json({ token, user: { email: user.email, subscription: user.subscription } });
   } catch (error) {
     next(error);
   }
