@@ -1,4 +1,4 @@
-import Joi from "joi";
+import Joi from 'joi';
 
 export const registerSchema = Joi.object({
   email: Joi.string().email().required(),
@@ -11,5 +11,5 @@ export const loginSchema = Joi.object({
 });
 
 export const subscriptionSchema = Joi.object({
-  subscription: Joi.string().valid("starter", "pro", "business").required(),
+  subscription: Joi.string().valid('starter', 'pro', 'business').required(),
 });
