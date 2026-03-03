@@ -1,7 +1,7 @@
-import { DataTypes } from "sequelize";
-import { sequelize } from "../db/sequelize.js";
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../db/sequelize.js';
 
-const User = sequelize.define("user", {
+const User = sequelize.define('user', {
   password: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -13,8 +13,11 @@ const User = sequelize.define("user", {
   },
   subscription: {
     type: DataTypes.ENUM,
-    values: ["starter", "pro", "business"],
-    defaultValue: "starter",
+    values: ['starter', 'pro', 'business'],
+    defaultValue: 'starter',
+  },
+  avatarURL: {
+    type: DataTypes.STRING,
   },
   token: {
     type: DataTypes.STRING,

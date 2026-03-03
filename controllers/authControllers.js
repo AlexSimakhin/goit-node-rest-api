@@ -1,18 +1,10 @@
-import User from "../models/user.js";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import HttpError from "../helpers/HttpError.js";
-
-const { JWT_SECRET = "secret" } = process.env;
+import * as authService from '../services/authServices.js';
 
 export const register = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const userExists = await User.findOne({ where: { email } });
-    if (userExists) throw HttpError(409, "Email in use");
-    const hashPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ email, password: hashPassword });
-    res.status(201).json({ user: { email: user.email, subscription: user.subscription } });
+    const user = await authService.registerUser({ email, password });
+    res.status(201).json({ user });
   } catch (error) {
     next(error);
   }
@@ -21,14 +13,8 @@ export const register = async (req, res, next) => {
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ where: { email } });
-    if (!user) throw HttpError(401, "Email or password is wrong");
-    const passwordCompare = await bcrypt.compare(password, user.password);
-    if (!passwordCompare) throw HttpError(401, "Email or password is wrong");
-    const payload = { id: user.id };
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "24h" });
-    await user.update({ token });
-    res.json({ token, user: { email: user.email, subscription: user.subscription } });
+    const result = await authService.loginUser({ email, password });
+    res.status(200).json(result);
   } catch (error) {
     next(error);
   }
@@ -36,10 +22,7 @@ export const login = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
   try {
-    const { id } = req.user;
-    const user = await User.findByPk(id);
-    if (!user) throw HttpError(401, "Not authorized");
-    await user.update({ token: null });
+    await authService.logoutUser(req.user.id);
     res.status(204).send();
   } catch (error) {
     next(error);
@@ -48,8 +31,8 @@ export const logout = async (req, res, next) => {
 
 export const getCurrent = async (req, res, next) => {
   try {
-    const { email, subscription } = req.user;
-    res.json({ email, subscription });
+    const user = await authService.getCurrentUser(req.user);
+    res.json(user);
   } catch (error) {
     next(error);
   }
@@ -57,12 +40,23 @@ export const getCurrent = async (req, res, next) => {
 
 export const updateSubscription = async (req, res, next) => {
   try {
-    const { id } = req.user;
-    const { subscription } = req.body;
-    const user = await User.findByPk(id);
-    if (!user) throw HttpError(401, "Not authorized");
-    await user.update({ subscription });
-    res.json({ email: user.email, subscription: user.subscription });
+    const user = await authService.updateUserSubscription(
+      req.user.id,
+      req.body.subscription
+    );
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateAvatar = async (req, res, next) => {
+  try {
+    const result = await authService.updateUserAvatar({
+      userId: req.user.id,
+      file: req.file,
+    });
+    res.json(result);
   } catch (error) {
     next(error);
   }

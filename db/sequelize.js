@@ -1,19 +1,19 @@
-import { Sequelize } from "sequelize";
-import "dotenv/config";
+import { Sequelize } from 'sequelize';
+import 'dotenv/config';
 
 const DB_URI = process.env.DB_URI;
 
 const sequelize = new Sequelize(DB_URI, {
-  dialect: "postgres",
+  dialect: 'postgres',
   logging: false,
 });
 
 async function connectDB() {
   try {
     await sequelize.authenticate();
-    console.log("Database connection successful");
+    console.log('Database connection successful');
   } catch (error) {
-    console.error("Database connection error:", error.message);
+    console.error('Database connection error:', error.message);
     process.exit(1);
   }
 }
@@ -21,9 +21,9 @@ async function connectDB() {
 async function syncModels() {
   try {
     await sequelize.sync({ alter: true });
-    console.log("All models were synchronized (altered) successfully.");
+    console.log('All models were synchronized (altered) successfully.');
   } catch (error) {
-    console.error("Model sync error:", error.message);
+    console.error('Model sync error:', error.message);
     process.exit(1);
   }
 }
