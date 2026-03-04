@@ -6,6 +6,8 @@ import {
   getCurrent,
   updateSubscription,
   updateAvatar,
+  verifyEmail,
+  resendVerification,
 } from '../controllers/authControllers.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import validateBody from '../helpers/validateBody.js';
@@ -33,5 +35,7 @@ router.patch(
   updateSubscription
 );
 router.patch('/avatars', authMiddleware, upload.single('avatar'), updateAvatar);
+router.get('/verify/:verificationToken', verifyEmail);
+router.post('/verify', resendVerification);
 
 export default router;
